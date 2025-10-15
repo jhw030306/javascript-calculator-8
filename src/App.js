@@ -24,7 +24,7 @@ class InputHandle {
 // 구분자로 문자 구분
 class SplitHandler {
   StringSplit(getValue) {
-    const splitValue = getValue.split(/,|;/);
+    const splitValue = getValue.split(/,|:/);
 
     var splitValueNumber = splitValue.map(Number);
     try {
