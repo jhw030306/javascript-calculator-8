@@ -24,6 +24,22 @@ class InputHandle {
 // 구분자로 문자 구분
 class SplitHandler {
   StringSplit(getValue) {
+    if (getValue.startsWith("//")) {
+      // Console.print(getValue);
+
+      var customSeperator = getValue.split("\\n");
+
+      if (
+        customSeperator[0].slice(2).length == 1 ||
+        customSeperator[0].slice(2) ==
+          "/[~!@#$%^&*()_+|~=, ]/"
+      ) {
+        Console.print(customSeperator[0].slice(2));
+      } else {
+        Console.print("오류");
+      }
+    }
+
     const splitValue = getValue.split(/,|:/);
 
     var splitValueNumber = splitValue.map(Number);
