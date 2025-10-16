@@ -11,21 +11,30 @@ class InputHandle {
   }
 }
 
-// 커스텀구분자
-// class SeparateHandler {
-//   CustomSeperate(getValue) {
-//     if (getValue.startsWith("//")) {
-//       const customSeperator = getValue.split("\n");
-//       Console.print(`특수문자 ${customSeperator}`);
-//     }
-//   }
-// }
-
 // 구분자로 문자 구분
 class SplitHandler {
   StringSplit(getValue) {
     if (getValue.startsWith("//")) {
-      var customSeperate = getValue.split("\\n");
+      const customSeperate = getValue.split("\\n");
+      try {
+        if (
+          customSeperate[0].slice(2).length == 0 &&
+          customSeperate[0].slice(2).length > 1
+        )
+          throw new Error(
+            "[Error] 구분자가 정의되지 않았습니다."
+          );
+        else if (
+          customSeperate[0].slice(2) !=
+          "/[~!@#$%^&*()_+|~=, ]/"
+        )
+          throw new Error(
+            "[Error] 구분자가 정의되지 않았습니다."
+          );
+      } catch (e) {
+        Console.print(e.message);
+        return;
+      }
 
       if (
         customSeperate[0].slice(2).length == 1 ||
