@@ -25,46 +25,68 @@ class InputHandle {
 class SplitHandler {
   StringSplit(getValue) {
     if (getValue.startsWith("//")) {
-      // Console.print(getValue);
-
-      var customSeperator = getValue.split("\\n");
+      var customSeperate = getValue.split("\\n");
 
       if (
-        customSeperator[0].slice(2).length == 1 ||
-        customSeperator[0].slice(2) ==
+        customSeperate[0].slice(2).length == 1 ||
+        customSeperate[0].slice(2) ==
           "/[~!@#$%^&*()_+|~=, ]/"
       ) {
-        Console.print(customSeperator[0].slice(2));
-      } else {
-        Console.print("오류");
+        const customSeperator = customSeperate[0].slice(2);
+        const customSplitValue =
+          customSeperate[1].split(customSeperator);
+
+        const customSplitNumber =
+          customSplitValue.map(Number);
+        try {
+          for (
+            let i = 0;
+            i < customSplitNumber.length;
+            i++
+          ) {
+            if (isNaN(customSplitValue[i]))
+              throw new Error(
+                "[ERROR] 양수와 구분자가 아닙니다."
+              );
+          }
+        } catch (e) {
+          Console.print(e.message);
+          return;
+        }
+
+        let sum = 0;
+
+        for (let i = 0; i < customSplitNumber.length; i++) {
+          sum += customSplitNumber[i];
+        }
+
+        Console.print(`결과 : ${sum}`);
       }
-    }
+    } else {
+      const splitValue = getValue.split(/,|:/);
+      const splitValueNumber = splitValue.map(Number);
+      try {
+        for (let i = 0; i < splitValueNumber.length; i++) {
+          if (isNaN(splitValue[i]))
+            throw new Error(
+              "[ERROR] 양수와 구분자가 아닙니다."
+            );
+        }
+      } catch (e) {
+        Console.print(e.message);
+        return;
+      }
 
-    const splitValue = getValue.split(/,|:/);
+      let sum = 0;
 
-    var splitValueNumber = splitValue.map(Number);
-    try {
       for (let i = 0; i < splitValueNumber.length; i++) {
-        if (isNaN(splitValue[i]))
-          throw new Error(
-            "[ERROR] 양수와 구분자가 아닙니다."
-          );
+        sum += splitValueNumber[i];
       }
-    } catch (e) {
-      Console.print(e.message);
-      return;
+
+      Console.print(`결과 : ${sum}`);
     }
-
-    let sum = 0;
-
-    for (let i = 0; i < splitValueNumber.length; i++) {
-      sum += splitValueNumber[i];
-    }
-
-    Console.print(`결과 : ${sum}`);
   }
 }
-
 class App {
   async run() {
     const inputhandle = new InputHandle();
