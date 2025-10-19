@@ -29,7 +29,7 @@ class CustomerHandler {
         const regExp = /[~!@#$%^&*()_+|~=, ]/;
         if (!regExp.test(customSeperator)) {
           throw new Error(
-            "[Error] 올바른 구분자가 아닙니다."
+            "[ERROR] 올바른 구분자가 아닙니다."
           );
         }
       } catch (e) {
