@@ -1,7 +1,7 @@
 import { Console } from "@woowacourse/mission-utils";
 
 // 문자열 입력받기
-class InputHandle {
+class InputHandler {
   async InputValue() {
     const getValue = await Console.readLineAsync(
       "덧셈할 문자열을 입력해 주세요. \n "
@@ -11,101 +11,104 @@ class InputHandle {
   }
 }
 
-// 구분자로 문자 구분
-class SplitHandler {
-  StringSplit(getValue) {
+// 커스텀 문자열 추출
+class CustomerHandler {
+  CustmoerStringSplit(getValue) {
     if (getValue.startsWith("//")) {
       const customSeperate = getValue.split("\\n");
+      const customSeperator = customSeperate[0].slice(2);
       try {
         if (
-          customSeperate[0].slice(2).length == 0 &&
-          customSeperate[0].slice(2).length > 1
+          customSeperator.length === 0 ||
+          customSeperator.length > 1
         )
+          throw new Error(
+            "[ERROR] 구분자가 정의되지 않았습니다."
+          );
+
+        const regExp = /[~!@#$%^&*()_+|~=, ]/;
+        if (!regExp.test(customSeperator)) {
           throw new Error(
             "[Error] 구분자가 정의되지 않았습니다."
           );
-        else if (
-          customSeperate[0].slice(2) !=
-          "/[~!@#$%^&*()_+|~=, ]/"
-        )
-          throw new Error(
-            "[Error] 구분자가 정의되지 않았습니다."
-          );
-      } catch (e) {
-        Console.print(e.message);
-        return;
-      }
-
-      if (
-        customSeperate[0].slice(2).length == 1 ||
-        customSeperate[0].slice(2) ==
-          "/[~!@#$%^&*()_+|~=, ]/"
-      ) {
-        const customSeperator = customSeperate[0].slice(2);
-        const customSplitValue =
-          customSeperate[1].split(customSeperator);
-
-        const customSplitNumber = customSplitValue.map(
-          (Number) => Math.abs(Number)
-        );
-        try {
-          for (
-            let i = 0;
-            i < customSplitNumber.length;
-            i++
-          ) {
-            if (isNaN(customSplitValue[i]))
-              throw new Error(
-                "[ERROR] 양수와 구분자가 아닙니다."
-              );
-          }
-        } catch (e) {
-          Console.print(e.message);
-          return;
-        }
-
-        let sum = 0;
-
-        for (let i = 0; i < customSplitNumber.length; i++) {
-          sum += customSplitNumber[i];
-        }
-
-        Console.print(`결과 : ${sum}`);
-      }
-    } else {
-      const splitValue = getValue.split(/,|:/);
-      const splitValueNumber = splitValue.map((Number) =>
-        Math.abs(Number)
-      );
-      try {
-        for (let i = 0; i < splitValueNumber.length; i++) {
-          if (isNaN(splitValue[i]))
-            throw new Error(
-              "[ERROR] 양수와 구분자가 아닙니다."
-            );
         }
       } catch (e) {
         Console.print(e.message);
         return;
       }
 
-      let sum = 0;
-
-      for (let i = 0; i < splitValueNumber.length; i++) {
-        sum += splitValueNumber[i];
-      }
-
-      Console.print(`결과 : ${sum}`);
+      return customSeperator, customSeperate;
     }
+    return null;
+  }
+}
+
+// 구분자로 문자 구분
+class SplitHandler {
+  StringSplit(getValue, customSeperate, customSeperator) {
+    let splitValue;
+    if (customSeperator) {
+      const customSeperator = customSeperate[0].slice(2);
+      splitValue = customSeperate[1].split(customSeperator);
+    } else {
+      splitValue = getValue.split(/,|:/);
+    }
+    const splitValueNumber = splitValue.map((Number) =>
+      Math.abs(Number.trim())
+    );
+
+    try {
+      for (let i = 0; i < splitValueNumber.length; i++) {
+        if (isNaN(splitValueNumber[i]))
+          throw new Error(
+            "[ERROR] 올바른 입력값(양수, 구분자)이 아닙니다."
+          );
+      }
+    } catch (e) {
+      Console.print(e.message);
+
+      return null;
+    }
+    return splitValueNumber;
+  }
+}
+
+// 구분된 숫자 계산
+class CalculatorHandler {
+  ValueCalculator(splitValueNumber) {
+    let sum = 0;
+
+    for (let i = 0; i < splitValueNumber.length; i++) {
+      sum += splitValueNumber[i];
+    }
+
+    Console.print(`결과 : ${sum}`);
   }
 }
 
 class App {
   async run() {
-    const inputhandle = new InputHandle();
+    const inputhandler = new InputHandler();
+    const customerhandler = new CustomerHandler();
     const splithander = new SplitHandler();
-    const getValue = await inputhandle.InputValue();
-    splithander.StringSplit(getValue);
+    const calculatorhandler = new CalculatorHandler();
+
+    const getValue = await inputhandler.InputValue();
+
+    const customSeperator =
+      customerhandler.CustmoerStringSplit(getValue);
+    const customSeperate =
+      customerhandler.CustmoerStringSplit(getValue);
+
+    const splitValueNumber = splithander.StringSplit(
+      getValue,
+      customSeperate,
+      customSeperator
+    );
+    if (splitValueNumber === null) {
+      return;
+    }
+    calculatorhandler.ValueCalculator(splitValueNumber);
   }
 }
 
