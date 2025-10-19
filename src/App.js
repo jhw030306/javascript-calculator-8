@@ -45,8 +45,9 @@ class SplitHandler {
         const customSplitValue =
           customSeperate[1].split(customSeperator);
 
-        const customSplitNumber =
-          customSplitValue.map(Number);
+        const customSplitNumber = customSplitValue.map(
+          (Number) => Math.abs(Number)
+        );
         try {
           for (
             let i = 0;
@@ -73,7 +74,9 @@ class SplitHandler {
       }
     } else {
       const splitValue = getValue.split(/,|:/);
-      const splitValueNumber = splitValue.map(Number);
+      const splitValueNumber = splitValue.map((Number) =>
+        Math.abs(Number)
+      );
       try {
         for (let i = 0; i < splitValueNumber.length; i++) {
           if (isNaN(splitValue[i]))
@@ -96,6 +99,7 @@ class SplitHandler {
     }
   }
 }
+
 class App {
   async run() {
     const inputhandle = new InputHandle();
