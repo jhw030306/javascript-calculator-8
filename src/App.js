@@ -23,13 +23,13 @@ class CustomerHandler {
           customSeperator.length > 1
         )
           throw new Error(
-            "[ERROR] 구분자가 정의되지 않았습니다."
+            "[ERROR] 올바른 입력값이 아닙니다."
           );
 
         const regExp = /[~!@#$%^&*()_+|~=, ]/;
         if (!regExp.test(customSeperator)) {
           throw new Error(
-            "[Error] 구분자가 정의되지 않았습니다."
+            "[Error] 올바른 구분자가 아닙니다."
           );
         }
       } catch (e) {
@@ -61,7 +61,7 @@ class SplitHandler {
       for (let i = 0; i < splitValueNumber.length; i++) {
         if (isNaN(splitValueNumber[i]))
           throw new Error(
-            "[ERROR] 올바른 입력값(양수, 구분자)이 아닙니다."
+            "[ERROR] 올바른 입력값이 아닙니다."
           );
       }
     } catch (e) {
