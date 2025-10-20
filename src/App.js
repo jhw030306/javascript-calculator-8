@@ -17,29 +17,21 @@ class CustomerHandler {
     if (getValue.startsWith("//")) {
       const customSeperate = getValue.split("\\n");
       const customSeperator = customSeperate[0].slice(2);
-      try {
-        if (
-          customSeperator.length === 0 ||
-          customSeperator.length > 1
-        )
-          throw new Error(
-            "[ERROR] 올바른 입력값이 아닙니다."
-          );
 
-        const regExp = /[~!@#$%^&*()_+|~=, ]/;
+      const regExp = /[~!@#$%^&*()_+|~=, ]/;
+      try {
         if (!regExp.test(customSeperator)) {
-          throw new Error(
-            "[ERROR] 올바른 구분자가 아닙니다."
-          );
-        }
+          throw new Error("[ERROR] 올바른 구분자가 아닙니다.");
+        } else if (customSeperator.length === 0 || customSeperator.length > 1)
+          throw new Error("[ERROR] 올바른 입력값이 아닙니다.");
       } catch (e) {
         Console.print(e.message);
-        return;
+        return null;
       }
 
-      return customSeperator, customSeperate;
+      return { customSeperator, customSeperate };
     }
-    return null;
+    return getValue;
   }
 }
 
@@ -47,12 +39,14 @@ class CustomerHandler {
 class SplitHandler {
   StringSplit(getValue, customSeperate, customSeperator) {
     let splitValue;
+
     if (customSeperator) {
       const customSeperator = customSeperate[0].slice(2);
       splitValue = customSeperate[1].split(customSeperator);
     } else {
       splitValue = getValue.split(/,|:/);
     }
+
     const splitValueNumber = splitValue.map((Number) =>
       Math.abs(Number.trim())
     );
@@ -60,9 +54,7 @@ class SplitHandler {
     try {
       for (let i = 0; i < splitValueNumber.length; i++) {
         if (isNaN(splitValueNumber[i]))
-          throw new Error(
-            "[ERROR] 올바른 입력값이 아닙니다."
-          );
+          throw new Error("[ERROR] 올바른 입력값이 아닙니다.");
       }
     } catch (e) {
       Console.print(e.message);
@@ -95,10 +87,12 @@ class App {
 
     const getValue = await inputhandler.InputValue();
 
-    const customSeperator =
-      customerhandler.CustmoerStringSplit(getValue);
-    const customSeperate =
-      customerhandler.CustmoerStringSplit(getValue);
+    const result = customerhandler.CustmoerStringSplit(getValue);
+    if (result === null) {
+      return;
+    }
+
+    const { customSeperator, customSeperate } = result;
 
     const splitValueNumber = splithander.StringSplit(
       getValue,
