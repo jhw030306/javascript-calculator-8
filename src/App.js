@@ -22,7 +22,7 @@ class CustomerHandler {
       try {
         if (!regExp.test(customSeperator)) {
           throw new Error("[ERROR] 올바른 구분자가 아닙니다.");
-        } else if (customSeperator.length === 0 || customSeperator.length > 1)
+        } else if (customSeperator.length !== 1)
           throw new Error("[ERROR] 올바른 입력값이 아닙니다.");
       } catch (e) {
         Console.print(e.message);
@@ -41,7 +41,7 @@ class SplitHandler {
     let splitValue;
 
     if (customSeperator) {
-      const customSeperator = customSeperate[0].slice(2);
+      // const customSeperator = customSeperate[0].slice(2);
       splitValue = customSeperate[1].split(customSeperator);
     } else {
       splitValue = getValue.split(/,|:/);
