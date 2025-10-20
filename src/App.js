@@ -18,7 +18,7 @@ class CustomerHandler {
       const customSeperate = getValue.split("\\n");
       const customSeperator = customSeperate[0].slice(2);
 
-      const regExp = /[~!@#$%^&*()_+|~=, ]/;
+      const regExp = /[~!@#$%^&*()_+|~=]/;
       try {
         if (!regExp.test(customSeperator)) {
           throw new Error("[ERROR] 올바른 구분자가 아닙니다.");
@@ -41,15 +41,12 @@ class SplitHandler {
     let splitValue;
 
     if (customSeperator) {
-      // const customSeperator = customSeperate[0].slice(2);
       splitValue = customSeperate[1].split(customSeperator);
     } else {
       splitValue = getValue.split(/,|:/);
     }
 
-    const splitValueNumber = splitValue.map((Number) =>
-      Math.abs(Number.trim())
-    );
+    const splitValueNumber = splitValue.map((Number) => Math.abs(Number));
 
     try {
       for (let i = 0; i < splitValueNumber.length; i++) {
@@ -86,6 +83,11 @@ class App {
     const calculatorhandler = new CalculatorHandler();
 
     const getValue = await inputhandler.InputValue();
+
+    if (getValue === "") {
+      Console.print("결과 : 0");
+      return;
+    }
 
     const result = customerhandler.CustmoerStringSplit(getValue);
     if (result === null) {
