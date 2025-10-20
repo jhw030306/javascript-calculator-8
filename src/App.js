@@ -1,5 +1,14 @@
 import { Console } from "@woowacourse/mission-utils";
 
+// 에러 처리
+class StringCalculatorError extends Error {
+  constructor(message) {
+    // [ERROR] 문자열 포함하여 메시지 설정
+    super(`[ERROR] ${message}`);
+    this.name = "StringCalculatorError";
+  }
+}
+
 // 문자열 입력받기
 class InputHandler {
   async InputValue() {
@@ -13,23 +22,19 @@ class InputHandler {
 
 // 커스텀 문자열 추출
 class CustomerHandler {
-  CustmoerStringSplit(getValue) {
+  CustomerStringSplit(getValue) {
     if (getValue.startsWith("//")) {
-      const customSeperate = getValue.split("\\n");
-      const customSeperator = customSeperate[0].slice(2);
-
-      const regExp = /[~!@#$%^&*()_+|~=]/;
-      try {
-        if (!regExp.test(customSeperator)) {
-          throw new Error("[ERROR] 올바른 구분자가 아닙니다.");
-        } else if (customSeperator.length !== 1)
-          throw new Error("[ERROR] 올바른 입력값이 아닙니다.");
-      } catch (e) {
-        Console.print(e.message);
-        return null;
+      const customSeparate = getValue.split("\\n");
+      const customSeparator = customSeparate[0].slice(2);
+      if (customSeparate.length < 2) {
+        throw new StringCalculatorError("입력 형식이 올바르지 않습니다.");
       }
 
-      return { customSeperator, customSeperate };
+      if (customSeparator.length !== 1) {
+        throw new StringCalculatorError("올바른 입력값이 아닙니다.");
+      }
+
+      return { customSeparator, customSeparate };
     }
     return getValue;
   }
@@ -37,27 +42,32 @@ class CustomerHandler {
 
 // 구분자로 문자 구분
 class SplitHandler {
-  StringSplit(getValue, customSeperate, customSeperator) {
+  StringSplit(getValue, customSeparate, customSeparator) {
     let splitValue;
 
-    if (customSeperator) {
-      splitValue = customSeperate[1].split(customSeperator);
+    if (customSeparator) {
+      splitValue = customSeparate[1].split(customSeparator);
     } else {
       splitValue = getValue.split(/,|:/);
     }
 
-    const splitValueNumber = splitValue.map((Number) => Math.abs(Number));
-
-    try {
-      for (let i = 0; i < splitValueNumber.length; i++) {
-        if (isNaN(splitValueNumber[i]))
-          throw new Error("[ERROR] 올바른 입력값이 아닙니다.");
+    const splitValueNumber = splitValue.map((numStr) => {
+      if (numStr.trim() === "") {
+        return 0;
       }
-    } catch (e) {
-      Console.print(e.message);
 
-      return null;
-    }
+      const num = Number(numStr);
+
+      if (isNaN(num)) {
+        throw new StringCalculatorError("올바른 입력값이 아닙니다.");
+      }
+
+      if (num < 0) {
+        throw new StringCalculatorError("음수는 입력할 수 없습니다.");
+      }
+
+      return num;
+    });
     return splitValueNumber;
   }
 }
@@ -77,34 +87,34 @@ class CalculatorHandler {
 
 class App {
   async run() {
-    const inputhandler = new InputHandler();
-    const customerhandler = new CustomerHandler();
-    const splithander = new SplitHandler();
-    const calculatorhandler = new CalculatorHandler();
+    const inputHandler = new InputHandler();
+    const customerHandler = new CustomerHandler();
+    const splitHandler = new SplitHandler();
+    const calculatorHandler = new CalculatorHandler();
 
-    const getValue = await inputhandler.InputValue();
+    const getValue = await inputHandler.InputValue();
 
     if (getValue === "") {
       Console.print("결과 : 0");
       return;
     }
 
-    const result = customerhandler.CustmoerStringSplit(getValue);
-    if (result === null) {
-      return;
+    const result = customerHandler.CustomerStringSplit(getValue);
+
+    let customSeparator;
+    let customSeparate;
+
+    if (typeof result === "object" && result !== null) {
+      ({ customSeparator, customSeparate } = result);
     }
 
-    const { customSeperator, customSeperate } = result;
-
-    const splitValueNumber = splithander.StringSplit(
+    const splitValueNumber = splitHandler.StringSplit(
       getValue,
-      customSeperate,
-      customSeperator
+      customSeparate,
+      customSeparator
     );
-    if (splitValueNumber === null) {
-      return;
-    }
-    calculatorhandler.ValueCalculator(splitValueNumber);
+
+    calculatorHandler.ValueCalculator(splitValueNumber);
   }
 }
 
